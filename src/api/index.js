@@ -16,14 +16,18 @@ export default ({ config, db }) => {
   })
 
   api.get('/mirror', (req, res) => {
-    const ipAddress = ip.address()
-    iplocation(ipAddress)
-      .then(ipResponse => {
-        res.json(ipResponse)
-      })
-      .catch(err => {
-        res.json(err)
-      })
+    // const ipAddress = ip.address()
+    var ipAddress =
+      req.headers['X-Forwarded-For'] || req.connection.remoteAddress
+    res.json(ipAddress)
+    // iplocation('56.70.97.8')
+    // iplocation(ipAddress)
+    //   .then(ipResponse => {
+    //     res.json(ipResponse)
+    //   })
+    //   .catch(err => {
+    //     res.json(err)
+    //   })
   })
 
   return api
