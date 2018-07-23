@@ -2,7 +2,8 @@ import { version } from '../../package.json'
 import { Router } from 'express'
 import facets from './facets'
 import iplocation from 'iplocation'
-import publicIp from 'public-ip'
+// import publicIp from 'public-ip'
+import http from 'http'
 import MobileDetect from 'mobile-detect'
 
 export default ({ config, db }) => {
@@ -18,18 +19,35 @@ export default ({ config, db }) => {
 
   api.get('/ip', (req, res) => {
     const deviceDetect = new MobileDetect(req.headers['user-agent'])
-    publicIp.v4().then(ipAddress => {
-      iplocation(ipAddress)
-        .then(ipResponse => {
-          res.json({
-            iplocation: ipResponse,
-            device: deviceDetect
+    // const publicIP = req.headers['x-forwarded-for']
+    http.get('http://bot.whatismyipaddress.com', function(request) {
+      request.setEncoding('utf8')
+      request.on('data', function(ipAddress) {
+        iplocation(ipAddress)
+          .then(ipResponse => {
+            res.json({
+              iplocation: ipResponse,
+              device: deviceDetect
+            })
           })
-        })
-        .catch(err => {
-          res.json(err)
-        })
+          .catch(err => {
+            res.json(err)
+          })
+      })
     })
+
+    // publicIp.v4().then(ipAddress => {
+    //   iplocation(ipAddress)
+    //     .then(ipResponse => {
+    //       res.json({
+    //         iplocation: ipResponse,
+    //         device: deviceDetect
+    //       })
+    //     })
+    //     .catch(err => {
+    //       res.json(err)
+    //     })
+    // })
   })
 
   return api
