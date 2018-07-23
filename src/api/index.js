@@ -2,9 +2,9 @@ import { version } from '../../package.json'
 import { Router } from 'express'
 import facets from './facets'
 import iplocation from 'iplocation'
-// import publicIp from 'public-ip'
-import http from 'http'
+
 import MobileDetect from 'mobile-detect'
+import moment from 'moment'
 
 export default ({ config, db }) => {
   let api = Router()
@@ -17,32 +17,13 @@ export default ({ config, db }) => {
     res.json({ version })
   })
 
-  api.get('/myip', (req, res) => {
-    const deviceDetect = new MobileDetect(req.headers['user-agent'])
-    // const publicIP = req.headers['x-forwarded-for']
-    http.get('http://bot.whatismyipaddress.com', function(request) {
-      request.setEncoding('utf8')
-      request.on('data', function(ipAddress) {
-        iplocation(ipAddress)
-          .then(ipResponse => {
-            res.json({
-              iplocation: ipResponse,
-              device: deviceDetect
-            })
-          })
-          .catch(err => {
-            res.json(err)
-          })
-      })
-    })
-  })
-
   api.get('/ip', (req, res) => {
     const deviceDetect = new MobileDetect(req.headers['user-agent'])
     const publicIP = req.headers['x-forwarded-for']
     iplocation(publicIP)
       .then(ipResponse => {
         res.json({
+          timeStampUTC: moment(),
           iplocation: ipResponse,
           device: deviceDetect
         })
@@ -50,21 +31,6 @@ export default ({ config, db }) => {
       .catch(err => {
         res.json(err)
       })
-    // http.get('http://bot.whatismyipaddress.com', function(request) {
-    //   request.setEncoding('utf8')
-    //   request.on('data', function(ipAddress) {
-    //     iplocation(ipAddress)
-    //       .then(ipResponse => {
-    //         res.json({
-    //           iplocation: ipResponse,
-    //           device: deviceDetect
-    //         })
-    //       })
-    //       .catch(err => {
-    //         res.json(err)
-    //       })
-    //   })
-    // })
   })
 
   return api
