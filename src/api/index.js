@@ -17,7 +17,7 @@ export default ({ config, db }) => {
     res.json({ version })
   })
 
-  api.get('/ip', (req, res) => {
+  api.get('/myip', (req, res) => {
     const deviceDetect = new MobileDetect(req.headers['user-agent'])
     // const publicIP = req.headers['x-forwarded-for']
     http.get('http://bot.whatismyipaddress.com', function(request) {
@@ -35,18 +35,28 @@ export default ({ config, db }) => {
           })
       })
     })
+  })
 
-    // publicIp.v4().then(ipAddress => {
-    //   iplocation(ipAddress)
-    //     .then(ipResponse => {
-    //       res.json({
-    //         iplocation: ipResponse,
-    //         device: deviceDetect
+  api.get('/ip', (req, res) => {
+    const deviceDetect = new MobileDetect(req.headers['user-agent'])
+    const publicIP = req.headers['x-forwarded-for']
+    res.json({
+      iplocation: publicIP
+    })
+    // http.get('http://bot.whatismyipaddress.com', function(request) {
+    //   request.setEncoding('utf8')
+    //   request.on('data', function(ipAddress) {
+    //     iplocation(ipAddress)
+    //       .then(ipResponse => {
+    //         res.json({
+    //           iplocation: ipResponse,
+    //           device: deviceDetect
+    //         })
     //       })
-    //     })
-    //     .catch(err => {
-    //       res.json(err)
-    //     })
+    //       .catch(err => {
+    //         res.json(err)
+    //       })
+    //   })
     // })
   })
 
