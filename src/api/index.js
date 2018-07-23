@@ -40,9 +40,16 @@ export default ({ config, db }) => {
   api.get('/ip', (req, res) => {
     const deviceDetect = new MobileDetect(req.headers['user-agent'])
     const publicIP = req.headers['x-forwarded-for']
-    res.json({
-      iplocation: publicIP
-    })
+    iplocation(publicIP)
+      .then(ipResponse => {
+        res.json({
+          iplocation: ipResponse,
+          device: deviceDetect
+        })
+      })
+      .catch(err => {
+        res.json(err)
+      })
     // http.get('http://bot.whatismyipaddress.com', function(request) {
     //   request.setEncoding('utf8')
     //   request.on('data', function(ipAddress) {
