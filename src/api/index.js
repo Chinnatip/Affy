@@ -1,8 +1,9 @@
 import { version } from '../../package.json'
 import { Router } from 'express'
 import facets from './facets'
-import ip from 'ip'
 import iplocation from 'iplocation'
+import publicIp from 'public-ip'
+import MobileDetect from 'mobile-detect'
 
 export default ({ config, db }) => {
   let api = Router()
@@ -15,19 +16,20 @@ export default ({ config, db }) => {
     res.json({ version })
   })
 
-  api.get('/mirror', (req, res) => {
-    // const ipAddress = ip.address()
-    var ipAddress =
-      req.headers['X-Forwarded-For'] || req.connection.remoteAddress
-    res.json(ipAddress)
-    // iplocation('56.70.97.8')
-    // iplocation(ipAddress)
-    //   .then(ipResponse => {
-    //     res.json(ipResponse)
-    //   })
-    //   .catch(err => {
-    //     res.json(err)
-    //   })
+  api.get('/ip', (req, res) => {
+    const deviceDetect = new MobileDetect(req.headers['user-agent'])
+    publicIp.v4().then(ipAddress => {
+      iplocation(ipAddress)
+        .then(ipResponse => {
+          res.json({
+            iplocation: ipResponse,
+            device: deviceDetect
+          })
+        })
+        .catch(err => {
+          res.json(err)
+        })
+    })
   })
 
   return api
