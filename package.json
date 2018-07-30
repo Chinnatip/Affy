@@ -36,6 +36,7 @@
     "cors": "^2.7.1",
     "express": "^4.13.3",
     "external-ip": "^2.0.3",
+    "firebase-admin": "^5.13.1",
     "ip": "^1.1.5",
     "ip-address": "^5.8.9",
     "iplocation": "^5.0.1",
