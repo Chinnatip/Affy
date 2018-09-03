@@ -1,11 +1,10 @@
 // IMPORT MODULE
-import { version } from '../../package.json'
+// import { version } from '../../package.json'
 import { Router } from 'express'
-import facets from './facets'
+import { linkRouter } from '../assets/linkRouter'
 import iplocation from 'iplocation'
 import MobileDetect from 'mobile-detect'
 import moment from 'moment-timezone'
-import { linkRouter } from '../assets/linkRouter'
 import serviceAccount from '../assets/serviceAccountFirebase.json'
 import admin from 'firebase-admin'
 
@@ -20,7 +19,6 @@ const affyDB = admin.firestore()
 export default ({ config, db }) => {
   let api = Router()
 
-  //// CUSTOM FUNCTION ////
   const parseURL = request => {
     let result = 'http://notfound.org/'
     linkRouter.forEach(({ id, url }) => {
@@ -30,10 +28,13 @@ export default ({ config, db }) => {
     })
     return result
   }
+
   const logger = (result, path) => {
+    console.log('Gogogogogogogog >>>>')
     console.log(result)
     console.log('** ACTION ** | ' + 'Redirect to ' + path)
   }
+
   const resultParser = (ip, device) => {
     return {
       timeStampUTC: moment(),
@@ -46,8 +47,7 @@ export default ({ config, db }) => {
   }
 
   //// API ////
-  api.use('/facets', facets({ config, db }))
-  //
+  // api.use('/facets', facets({ config, db }))
   api.get('/', (req, res) => {
     let result = []
     affyDB
@@ -87,18 +87,6 @@ export default ({ config, db }) => {
         })
         logger(result, path)
         res.redirect(path)
-      })
-      .catch(err => {
-        res.json(err)
-      })
-  })
-  //
-  api.get('/ip', (req, res) => {
-    const device = new MobileDetect(req.headers['user-agent'])
-    const openIP = req.headers['x-forwarded-for']
-    iplocation(openIP)
-      .then(response => {
-        res.json(resultParser(response, device))
       })
       .catch(err => {
         res.json(err)
